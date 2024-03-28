@@ -46,6 +46,7 @@ export function useSocket() {
   };
 
   watch(socket, (newSocket, oldSocket) => {
+    console.log({ newSocket, oldSocket });
     if (oldSocket) {
       console.log("disconnecting old socket");
       oldSocket.disconnect();
