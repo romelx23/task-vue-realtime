@@ -6,6 +6,7 @@ import { formStore } from "../store/formStore";
 import { taskStore } from "../store/taskStore";
 import { Task } from "./ContentComponent.vue";
 import { urlServer } from "../constants/constants";
+import { Form, Field, ErrorMessage, defineRule } from "vee-validate";
 
 // defineProps<{ msg: string }>()
 
@@ -74,9 +75,10 @@ const handleCancel = () => {
   isInsert.value = true;
 };
 
-const handleSubmit = () => {
+const onSubmit = (values: any) => {
   try {
     console.log("submit");
+    console.log(values);
     console.log(date.value);
     console.log(title.value);
     console.log(description.value);
@@ -93,6 +95,19 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   disconnect();
+});
+
+// const validateRequired = (value: string) => {
+//     if (!value) {
+//         return { valid: false, message: "Este campo es requerido" };
+//     }
+//     return true; // Implicitly { valid: true, message: undefined }
+// };
+defineRule("required", (value: any) => {
+  if (!value || !value.length) {
+    return "Este campo es requerido";
+  }
+  return true;
 });
 
 const parseDate = (date: string) => {
@@ -139,17 +154,22 @@ console.log(useTaskStore.total);
 </script>
 
 <template>
-  <form class="form" @submit.prevent="handleSubmit">
+  <Form class="form" @submit="onSubmit">
     <span>
       {{ isInsert ? "Agregar tarea" : "Editar tarea" }}
     </span>
-    <input
+    <Field
+      name="title"
       type="text"
       placeholder="Ingresa tu tarea"
       class="input-text"
       v-model="title"
+      rules="required"
     />
-    <textarea
+    <ErrorMessage name="title" style="color: #ff0a6c" />
+    <Field
+      type="text"
+      as="textarea"
       name="description"
       id="description"
       cols="30"
@@ -157,7 +177,9 @@ console.log(useTaskStore.total);
       placeholder="Descripción de la tarea"
       class="input-text"
       v-model="description"
-    ></textarea>
+      rules="required"
+    ></Field>
+    <ErrorMessage name="description" style="color: #ff0a6c" />
     <!-- <VCalendar
       is-dark="{ selector: ':root', darkClass: 'dark' }"
       is-expanded="{ selector: ':root', expandedClass: 'expanded' }"
@@ -173,8 +195,23 @@ console.log(useTaskStore.total);
       "
       class="calendar"
     /> -->
-    <input type="date" class="input-text" v-model="date" />
-    <input type="color" class="input-text" v-model="color" />
+    <Field
+      type="date"
+      class="input-text"
+      v-model="date"
+      as="input"
+      name="date"
+      rules="required"
+    />
+    <ErrorMessage name="date" style="color: #ff0a6c" />
+    <Field
+      name="color"
+      type="color"
+      class="input-text"
+      v-model="color"
+      rules="required"
+    />
+    <ErrorMessage name="color" style="color: #ff0a6c" />
     <div
       class=""
       style="border-radius: 5px"
@@ -200,7 +237,7 @@ console.log(useTaskStore.total);
     >
       Cancelar
     </button>
-  </form>
+  </Form>
 </template>
 <style scoped>
 .input-text {

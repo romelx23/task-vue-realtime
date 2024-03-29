@@ -31,7 +31,7 @@ import ContentComponent from "./components/ContentComponent.vue";
 }
 .container__wrapper {
   width: 100%;
-  min-height: 70vh;
+  /* min-height: 70vh; */
   display: flex;
   flex-direction: row;
   align-items: center;

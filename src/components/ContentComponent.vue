@@ -46,6 +46,30 @@ const updateTask = (task: Task) => {
   // toast.success("Tarea actualizada");
 };
 
+const procesorDescription = (description: string) => {
+  const twitterImageRegex = /https:\/\/pbs.twimg.com\/media\/([^\?]*)(\?.*)?/g;
+
+  if (twitterImageRegex.test(description)) {
+    description = description.replace(
+      twitterImageRegex,
+      '<img src="https://pbs.twimg.com/media/$1$2" alt="Imagen de la descripción" style="width:80px">'
+    );
+  }
+  // Reemplazar las URLs por enlaces
+  // let processedDescription = description.replace(
+  //   /((http|https):\/\/[^\s]+)/g,
+  //   '<a href="$1">$1</a>'
+  // );
+  console.log({ description });
+  // Reemplazar las imágenes por previsualizaciones
+  let processedDescription = description.replace(
+    /\b((http|https):\/\/[^\s]+)\/([^\s]+)\.(jpg|jpeg|png|gif)\b/g,
+    '<img src="$1/$3.$4" alt="Imagen de la descripción" style="width:60px">'
+  );
+
+  return processedDescription;
+};
+
 useTaskStore.$subscribe((mutation, data) => {
   console.log({ mutation });
   console.log({ data });
@@ -107,11 +131,10 @@ useTaskStore.$subscribe((mutation, data) => {
       <h2 :style="{ background: task.color }">
         {{ task.title }}
       </h2>
-      <p>
-        <!-- <pre class="description"> -->
-        {{ task.description.trim() }}
-        <!-- </pre> -->
-      </p>
+      <p
+        class="description"
+        v-html="procesorDescription(task.description.trim())"
+      ></p>
       <p class="date">
         {{ new Date(task.date).toLocaleDateString() }}
       </p>
@@ -141,15 +164,23 @@ useTaskStore.$subscribe((mutation, data) => {
   flex-wrap: wrap;
   /* justify-content: center; */
   border: 1px solid #fff;
+  gap: 10px;
+  padding: 10px 0px 10px 10px;
 }
 .card {
   width: 200px;
   height: 250px;
   border: 1px solid #fff;
-  margin: 0 10px;
+  /* margin: 0 10px; */
   padding: 0 0px;
   border-radius: 5px;
   position: relative;
+  text-wrap: wrap;
+}
+@media (max-width: 768px) {
+  .card {
+    width: 100%;
+  }
 }
 .card h2 {
   padding: 5px 10px;
